@@ -1,8 +1,14 @@
-set startTime 54935198000
+set startTime 68334898000
+#59116346000
+#54935198000
 #57621401000
-set endTime   54954410000
-#57632733000
-set vcdFile /scratch/andrire/RNNASIP/sourcecode/Basic_Kernels/build/pulpissimo/vcd/riscv_MODEL5_8_true.vcd.gz
+set endTime   69007875000
+#59135558000
+#59680651000  
+#54954410000
+set vcdName rnnext_MODEL0_8_false
+set vcdFile /scratch/andrire/RNNASIP/sourcecode/Basic_Kernels/vcd/$vcdName.vcd.gz
+#/scratch/andrire/RNNASIP/sourcecode/Basic_Kernels/vcd/rnnext_new_MODEL5_8_false.vcd.gz
 set targetFrequency 380
 set vcdFrequency 50.5
 
@@ -21,7 +27,7 @@ set_power -reset
 set_powerup_analysis -reset
 set_dynamic_power_simulation -reset
 
-report_power -outfile ${DESIGNNAME}.rpt -sort total -hierarchy all
+report_power -outfile ${DESIGNNAME}_$vcdName.rpt -sort total -hierarchy all
 echo "Power simulation configuration" > tmp
 echo [concat "hostname: " [exec hostname]] >> tmp
 echo "Netlist" >> tmp
@@ -33,11 +39,11 @@ ls -lah $vcdFile >> tmp
 echo "targetFrequency = \t $targetFrequency" >> tmp
 echo "vcdFrequency = \t $vcdFrequency" >> tmp
 echo "scalingFactor = \t $scalingFactor" >> tmp
-exec cat ./reports/power/${DESIGNNAME}.rpt >>  tmp
-mv tmp ./reports/power/${DESIGNNAME}.rpt
+exec cat ./reports/power/${DESIGNNAME}_$vcdName.rpt >>  tmp
+mv tmp ./reports/power/${DESIGNNAME}_$vcdName.rpt
 
-cat ./reports/power/${DESIGNNAME}.rpt | grep _i | grep -v "/"
-cat ./reports/power/${DESIGNNAME}.rpt | grep "Total Internal Power" | tail -n1
-cat ./reports/power/${DESIGNNAME}.rpt | grep "Total Switching Power" | tail -n1
-cat ./reports/power/${DESIGNNAME}.rpt | grep "Total Leakage Power" | tail -n1
-cat ./reports/power/${DESIGNNAME}.rpt | grep "Total Power" | tail -n1
+cat ./reports/power/${DESIGNNAME}_$vcdName.rpt | grep _i | grep -v "/"
+cat ./reports/power/${DESIGNNAME}_$vcdName.rpt | grep "Total Internal Power" | tail -n1
+cat ./reports/power/${DESIGNNAME}_$vcdName.rpt | grep "Total Switching Power" | tail -n1
+cat ./reports/power/${DESIGNNAME}_$vcdName.rpt | grep "Total Leakage Power" | tail -n1
+cat ./reports/power/${DESIGNNAME}_$vcdName.rpt | grep "Total Power" | tail -n1
