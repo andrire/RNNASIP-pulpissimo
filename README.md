@@ -154,6 +154,7 @@ before starting the simulation. You will find the VCD in
 `build/<SRC_FILE_NAME>/pulpissimo/export.vcd.gz` where
 `<SRC_FILE_NAME>` is the name of the C source of the test.
 
+
 ## Requirements
 The RTL platform has the following requirements:
 - Relatively recent Linux-based operating system; we tested *Ubuntu 16.04* and

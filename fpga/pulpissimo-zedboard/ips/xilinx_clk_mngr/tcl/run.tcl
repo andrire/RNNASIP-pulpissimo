@@ -11,17 +11,22 @@ if [info exists ::env(XILINX_BOARD)] {
 }
 
 # detect target clock
-if [info exists ::env(SLOW_CLK_PERIOD_NS)] {
-    set SLOW_CLK_PERIOD_NS $::env(SLOW_CLK_PERIOD_NS)
+if [info exists ::env(FC_CLK_PERIOD_NS)] {
+    set FC_CLK_PERIOD_NS $::env(FC_CLK_PERIOD_NS)
 } else {
-    set SLOW_CLK_PERIOD_NS 30517
+    set FC_CLK_PERIOD_NS 10.000
+}
+if [info exists ::env(PER_CLK_PERIOD_NS)] {
+    set PER_CLK_PERIOD_NS $::env(PER_CLK_PERIOD_NS)
+} else {
+    set PER_CLK_PERIOD_NS 20.000
 }
 
-# Multiply frequency by 250 as there is a clock divider (by 250) after the
-# slow_clk_mngr since the MMCMs do not support clocks slower then 4.69 MHz.
-set SLOW_CLK_FREQ_MHZ [expr 1000 * 256 / $SLOW_CLK_PERIOD_NS]
 
-set ipName xilinx_slow_clk_mngr
+set FC_CLK_FREQ_MHZ [expr 1000 / $FC_CLK_PERIOD_NS]
+set PER_CLK_FREQ_MHZ [expr 1000 / $PER_CLK_PERIOD_NS]
+
+set ipName xilinx_clk_mngr
 
 create_project $ipName . -part $partNumber
 set_property board_part $boardName [current_project]
@@ -29,15 +34,14 @@ set_property board_part $boardName [current_project]
 create_ip -name clk_wiz -vendor xilinx.com -library ip -module_name $ipName
 
 set_property -dict [eval list CONFIG.PRIM_IN_FREQ {100.000} \
-                        CONFIG.CLKOUT1_REQUESTED_OUT_FREQ {$SLOW_CLK_FREQ_MHZ} \
-                        CONFIG.USE_SAFE_CLOCK_STARTUP {true} \
-                        CONFIG.USE_LOCKED {false} \
+                        CONFIG.NUM_OUT_CLKS {2} \
+                        CONFIG.CLKOUT2_USED {true} \
                         CONFIG.RESET_TYPE {ACTIVE_LOW} \
-                        CONFIG.CLKIN1_JITTER_PS {50.0} \
-                        CONFIG.FEEDBACK_SOURCE {FDBK_AUTO} \
                         CONFIG.RESET_PORT {resetn} \
+                        CONFIG.CLKOUT1_REQUESTED_OUT_FREQ {$FC_CLK_FREQ_MHZ} \
+                        CONFIG.CLKOUT2_REQUESTED_OUT_FREQ {$PER_CLK_FREQ_MHZ} \
+                        CONFIG.CLKIN1_JITTER_PS {50.0} \
                        ] [get_ips $ipName]
-
 
 generate_target all [get_files  ./$ipName.srcs/sources_1/ip/$ipName/$ipName.xci]
 create_ip_run [get_files -of_objects [get_fileset sources_1] ./$ipName.srcs/sources_1/ip/$ipName/$ipName.xci]
