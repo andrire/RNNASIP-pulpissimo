@@ -1,3 +1,5 @@
+This is a fork from https://github.com/pulp-platform/pulpissimo/tree/rnnext (80d493eaef950285a0e4f5d1e1afd4e6c0074872)
+
 # Notes
 changed C flags to export CFLAGS="-march=nocona -ftree-vectorize -fPIC -fstack-protector-strong -O2 -ffunction-sections -pipe"
 to avoid problems with g++.
